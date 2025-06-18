@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DBR Calculator</title>
+  <style>
+    body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
+    input { margin-bottom: 10px; width: 100%; padding: 8px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    #result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>DBR Calculator</h2>
+
+  <label>Salary</label>
+  <input type="number" id="salary" placeholder="e.g. 12000">
+
+  <label>Additional Income (last 3 months)</label>
+  <input type="number" id="comm1" placeholder="Month 1">
+  <input type="number" id="comm2" placeholder="Month 2">
+  <input type="number" id="comm3" placeholder="Month 3">
+
+  <label>Monthly Loan Installments (EMIs)</label>
+  <input type="number" id="emi1" placeholder="Loan 1">
+  <input type="number" id="emi2" placeholder="Loan 2">
+  <input type="number" id="emi3" placeholder="Loan 3">
+
+  <label>Credit Card Limits</label>
+  <input type="number" id="cc1" placeholder="Card 1">
+  <input type="number" id="cc2" placeholder="Card 2">
+  <input type="number" id="cc3" placeholder="Card 3">
+
+  <button onclick="calculateDBR()">Calculate DBR</button>
+
+  <div id="result"></div>
+
+  <script>
+    function calculateDBR() {
+      const salary = parseFloat(document.getElementById("salary").value) || 0;
+
+      const comms = [
+        parseFloat(document.getElementById("comm1").value) || 0,
+        parseFloat(document.getElementById("comm2").value) || 0,
+        parseFloat(document.getElementById("comm3").value) || 0,
+      ];
+      const avgComm = (comms.reduce((a, b) => a + b, 0)) / 3;
+      const income = salary + (0.25 * avgComm);
+
+      const emis = [
+        parseFloat(document.getElementById("emi1").value) || 0,
+        parseFloat(document.getElementById("emi2").value) || 0,
+        parseFloat(document.getElementById("emi3").value) || 0,
+      ];
+      const totalEMI = emis.reduce((a, b) => a + b, 0);
+
+      const cards = [
+        parseFloat(document.getElementById("cc1").value) || 0,
+        parseFloat(document.getElementById("cc2").value) || 0,
+        parseFloat(document.getElementById("cc3").value) || 0,
+      ];
+      const totalCC = cards.reduce((a, b) => a + b, 0);
+      const liability = totalEMI + (0.05 * totalCC);
+
+      const dbr = income === 0 ? 0 : (liability / income) * 100;
+      const resultText = dbr.toFixed(2) + "%";
+
+      let resultBox = document.getElementById("result");
+      if (dbr > 50) {
+        resultBox.innerHTML = `DBR: <span style="color:red">${resultText}</span> ❌ Over limit`;
+      } else {
+        resultBox.innerHTML = `DBR: <span style="color:green">${resultText}</span> ✅ Acceptable`;
+      }
+    }
+  </script>
+</body>
+</html>
