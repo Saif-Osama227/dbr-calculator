@@ -4,32 +4,75 @@
   <meta charset="UTF-8">
   <title>DBR Calculator</title>
   <style>
-    body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
-    input { margin-bottom: 10px; width: 100%; padding: 8px; }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    #result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
+
   <h2>DBR Calculator</h2>
 
-  <label>Salary</label>
-  <input type="number" id="salary" placeholder="e.g. 12000">
+  <div class="form-group">
+    <label>Salary</label>
+    <input type="number" id="salary" placeholder="e.g. 12000">
+  </div>
 
-  <label>Additional Income (last 3 months)</label>
-  <input type="number" id="comm1" placeholder="Month 1">
-  <input type="number" id="comm2" placeholder="Month 2">
-  <input type="number" id="comm3" placeholder="Month 3">
+  <div class="form-group">
+    <label>Monthly Loan Installments (EMIs)</label>
+    <input type="number" id="emi1" placeholder="Loan 1">
+    <input type="number" id="emi2" placeholder="Loan 2">
+    <input type="number" id="emi3" placeholder="Loan 3">
+  </div>
 
-  <label>Monthly Loan Installments (EMIs)</label>
-  <input type="number" id="emi1" placeholder="Loan 1">
-  <input type="number" id="emi2" placeholder="Loan 2">
-  <input type="number" id="emi3" placeholder="Loan 3">
-
-  <label>Credit Card Limits</label>
-  <input type="number" id="cc1" placeholder="Card 1">
-  <input type="number" id="cc2" placeholder="Card 2">
-  <input type="number" id="cc3" placeholder="Card 3">
+  <div class="form-group">
+    <label>Credit Card Limits</label>
+    <input type="number" id="cc1" placeholder="Card 1">
+    <input type="number" id="cc2" placeholder="Card 2">
+    <input type="number" id="cc3" placeholder="Card 3">
+  </div>
 
   <button onclick="calculateDBR()">Calculate DBR</button>
 
@@ -37,15 +80,14 @@
 
   <script>
     function calculateDBR() {
-      const salary = parseFloat(document.getElementById("salary").value) || 0;
+      const salary = parseFloat(document.getElementById("salary").value);
 
-      const comms = [
-        parseFloat(document.getElementById("comm1").value) || 0,
-        parseFloat(document.getElementById("comm2").value) || 0,
-        parseFloat(document.getElementById("comm3").value) || 0,
-      ];
-      const avgComm = (comms.reduce((a, b) => a + b, 0)) / 3;
-      const income = salary + (0.25 * avgComm);
+      // Early return if salary not entered or zero
+      if (isNaN(salary) || salary <= 0) {
+        document.getElementById("result").innerHTML = 
+          `<span style="color: red;">Please enter a valid salary to calculate DBR.</span>`;
+        return;
+      }
 
       const emis = [
         parseFloat(document.getElementById("emi1").value) || 0,
@@ -60,18 +102,22 @@
         parseFloat(document.getElementById("cc3").value) || 0,
       ];
       const totalCC = cards.reduce((a, b) => a + b, 0);
+
       const liability = totalEMI + (0.05 * totalCC);
+      const dbr = (liability / salary) * 100;
+      const dbrFormatted = dbr.toFixed(2) + "%";
 
-      const dbr = income === 0 ? 0 : (liability / income) * 100;
-      const resultText = dbr.toFixed(2) + "%";
+      let result = `DBR: <span style="color:${dbr > 50 ? 'red' : 'green'}">${dbrFormatted}</span>`;
 
-      let resultBox = document.getElementById("result");
       if (dbr > 50) {
-        resultBox.innerHTML = `DBR: <span style="color:red">${resultText}</span> ❌ Over limit`;
+        result += " ❌ Over limit";
       } else {
-        resultBox.innerHTML = `DBR: <span style="color:green">${resultText}</span> ✅ Acceptable`;
+        result += " ✅ Acceptable";
       }
+
+      document.getElementById("result").innerHTML = result;
     }
   </script>
+
 </body>
 </html>
